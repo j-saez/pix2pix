@@ -45,18 +45,3 @@ class EncoderDecoderGenerator(nn.Module):
     """
     def forward(self, x):
         return self.model(x)
-
-if __name__ == '__main__':
-    import torch
-
-    B = 64
-    CHS = 3
-    H = 256
-    W = 256
-
-    x = torch.rand(B,CHS,H,W)
-    model = EncoderDecoderGenerator(CHS)
-    output = model(x)
-
-    print(f'output size = {output.size()}')
-    assert output.size() == (B, CHS, H, W)

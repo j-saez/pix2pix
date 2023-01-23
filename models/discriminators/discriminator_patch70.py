@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 from utils.layers.disc_conv_layer import DiscConvBlock
 
@@ -22,19 +23,3 @@ class Discriminator70x70(nn.Module):
     def forward(self, orig_img, transformed_img):
         x = torch.cat((orig_img, transformed_img), dim=1)
         return self.model(x)
-
-if __name__ == '__main__':
-    
-    import torch
-
-    B = 64
-    CHS = 3
-    H = 70
-    W = 70
-
-    x = torch.rand(B,CHS,H,W)
-    model = Discriminator70x70(CHS)
-    output = model(x,x)
-
-    print(f'output size = {output.size()}')
-    assert output.size() == (B, 1, 1, 1)

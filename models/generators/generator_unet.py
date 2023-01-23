@@ -60,17 +60,3 @@ class UNETGenerator(nn.Module):
         output = self.dec_ouptput_layer(torch.cat((dec_l7_out, enc_input_layer_out),dim=1))
 
         return output
-
-if __name__ == '__main__':
-
-    B = 64
-    CHS = 3
-    H = 256
-    W = 256
-
-    x = torch.rand(B,CHS,H,W)
-    model = UNETGenerator(CHS)
-    output = model(x)
-
-    print(f'output size = {output.size()}')
-    assert output.size() == (B, CHS, H, W)
