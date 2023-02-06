@@ -1,9 +1,9 @@
-from models.discriminator.discriminator_patch286 import Discriminator286x286
-from models.discriminator.discriminator_patch70  import Discriminator70x70
-from models.discriminator.discriminator_patch16  import Discriminator16x16
-from models.discriminator.discriminator_patch1   import Discriminator1x1
-from models.generator.unet_generator             import UNETGenerator
-from models.generator.no_skip_generator          import EncoderDecoderGenerator
+from models.discriminators.discriminator_patch286 import Discriminator286x286
+from models.discriminators.discriminator_patch70  import Discriminator70x70
+from models.discriminators.discriminator_patch16  import Discriminator16x16
+from models.discriminators.discriminator_patch1   import Discriminator1x1
+from models.generators.generator_unet             import UNETGenerator
+from models.generators.encoder_decoder_generator  import EncoderDecoderGenerator
 
 def load_discriminator_model(in_chs, patch_size):
     model = []
@@ -16,7 +16,7 @@ def load_discriminator_model(in_chs, patch_size):
     elif patch_size==1:
         model = Discriminator1x1(in_chs)
     else:
-        raise Exception(f'There is no discriminator for {} patch size. Choose between: 286, 70, 16 and 1')
+        raise Exception(f'There is no discriminator for {path_size} patch size. Choose between: 286, 70, 16 and 1')
     return model
 
 def load_generator_model(in_chs, unet):

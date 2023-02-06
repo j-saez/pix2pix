@@ -22,6 +22,7 @@ class Hyperparams():
     norm: str
     patch_size: int
     use_unet_gen: bool
+    l1_lambda: float
 
 @dataclass
 class DatasetParams():
@@ -46,6 +47,7 @@ class Params():
             lr=self.args.learning_rate,
             adam_beta1=self.args.adam_beta1,
             adam_beta2=self.args.adam_beta2,
+            l1_lambda=self.args.l1_lambda,
             norm=self.args.norm,
             patch_size=self.args.patch_size,
             use_unet_gen=self.args.use_unet_gen,
@@ -77,10 +79,11 @@ class Params():
 
         # Hyperparams
         parser.add_argument( '--total_epochs', type=int, default=200, help='Total epochs for the training.')
-        parser.add_argument( '--batch_size', type=int, default=128, help='Batch size for the training phase.')
-        parser.add_argument( '--learning_rate', type=float, default=2e-4, help='Learning rate value.')
+        parser.add_argument( '--batch_size', type=int, default=8, help='Batch size for the training phase.')
+        parser.add_argument( '--learning_rate', type=float, default=0.0002, help='Learning rate value.')
         parser.add_argument( '--adam_beta1', type=float, default=0.5,help='Adam beta 1.')
         parser.add_argument( '--adam_beta2', type=float, default=0.999,help='Adam beta 2.')
+        parser.add_argument( '--l1_lambda',  type=float, default=100.0,help='L1 lambda. (Check eq 4 from original paper.)')
         parser.add_argument( '--test_after_n_epochs', type=int, default=10, help='Test the model after n epochs of training')
         parser.add_argument( '--norm', type=str, default='l1', help='Normalization to be applied in the loss fucntion (l1 or l2).')
         parser.add_argument( '--patch_size', type=int, default=286, help='Patch for the discriminator. Select between 1, 16, 70 or 286 (default).')
@@ -88,10 +91,8 @@ class Params():
             
         # Dataset params
         parser.add_argument( '--dataset_path', type=str, default=os.getcwd()+'/datasets/', help='Path to the datasets folder.')
-        parser.add_argument( '--dataset_name', type=str, default='mnist', help='Name of the dataset to be loaded for the training.')
+        parser.add_argument( '--dataset_name', type=str, default='maps', help='Name of the dataset to be loaded for the training.')
         parser.add_argument( '--img_size', type=int, default=64, help='Size for squared images.')
 
         return parser.parse_args()
-
-        return
 

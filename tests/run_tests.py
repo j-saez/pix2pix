@@ -6,6 +6,7 @@ from tests.models_tests.discriminator_tests.disc_patch286_tests import DiscPatch
 from tests.models_tests.generators_tests.unet_generator_tests import UNETGenTests
 from tests.models_tests.generators_tests.encoder_decoder_generator_tests import EncDecGenTests
 
+from tests.dataset_classes_tests.pix2pix_datasets import Pix2PixBaseDatasetTests
 
 if __name__ == '__main__':
 
@@ -24,3 +25,6 @@ if __name__ == '__main__':
     UNETGenTests()
     print('   Encoder-Decoder generator tests')
     EncDecGenTests()
+
+    print('Datasets classes tests')
+    Pix2PixBaseDatasetTests()

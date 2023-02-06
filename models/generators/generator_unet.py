@@ -34,7 +34,7 @@ class UNETGenerator(nn.Module):
         self.dec_l7 = GenUpsampling(128*2, 64, padding_value=1, dropout=True)
         self.dec_ouptput_layer = nn.Sequential(
             nn.ConvTranspose2d(64*2, in_chs, kernel_size=4, stride=2, padding=1),
-            nn.ReLU(),
+            nn.Tanh(),
         )
         return
 
