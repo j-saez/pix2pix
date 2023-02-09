@@ -39,9 +39,5 @@ class EncoderDecoderGenerator(nn.Module):
         )
         return
 
-    """
-        Use at least an input of size (Batch, Channels, 256, 256).
-        In the original paper the size they use is the one above.
-    """
     def forward(self, x):
         return self.model(x)

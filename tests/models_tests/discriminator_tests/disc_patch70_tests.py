@@ -1,6 +1,5 @@
 import torch
 from models.discriminators.discriminator_patch70 import Discriminator70x70
-
 B = 64
 CHS = 3
 H = 70

@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 from utils.layers.disc_conv_layer import DiscConvBlock
 
+CHS_DIM = 1
+
 """
     Discriminator70x70: Discriminator model for images patches of size 70x70 pixels
 """
@@ -21,5 +23,5 @@ class Discriminator70x70(nn.Module):
         return
 
     def forward(self, orig_img, transformed_img):
-        x = torch.cat((orig_img, transformed_img), dim=1)
+        x = torch.cat((orig_img, transformed_img), dim=CHS_DIM)
         return self.model(x)
