@@ -3,9 +3,7 @@ from utils.layers.gen_conv_layer import GenDownsampling, GenUpsampling
 
 """
     EncoderDecoderGenerator: 
-        Generator that does not use the UNET architecture as explained in the paper.
-        Use at least an input of (Batch, Channels, 256, 256) as the input for the 
-        forward method.
+        Generator that does use the encoder-decoder architecture explained in the paper.
     Inputs:
         >> in_chs: (int)
 """
@@ -40,4 +38,7 @@ class EncoderDecoderGenerator(nn.Module):
         return
 
     def forward(self, x):
+        _, _, height, width = x.size()
+        if (height, width) != (256, 256):
+            raise Exception(f'The input images need to be 256x256, and it has been fed an image of size {height}x{width}')
         return self.model(x)

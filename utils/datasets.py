@@ -13,7 +13,7 @@ from datasets.classes.pix2pix_dataset import Pix2PixBaseDataset
 ## globals and consts ## 
 ########################
 
-DATASETS_ORIG_SIZE = {'facades': 256, 'maps': 600, 'edges2shoes': 256, 'cityskapes': 256}
+DATASETS_ORIG_SIZE = {'facades': 256, 'maps': 600, 'edges2shoes': 256, 'cityscapes': 256}
 AVAILABLE_DATASETS = ['maps','facades','edges2shoes','cityscapes']
 DATASETS_PATH = os.getcwd() + '/datasets/data/'
 
@@ -31,19 +31,18 @@ DATASETS_PATH = os.getcwd() + '/datasets/data/'
     Outputs:
         >> train_dataset: (torch.utils.data.Dataset) Train data.
 """
-def load_dataset(dataset_name, desired_img_size, val, direction):
+def load_dataset(dataset_name, desired_img_size, val, augmentation, direction):
     dataset = None
     if not dataset_name in AVAILABLE_DATASETS:
         raise Exception(f'{dataset_name} not available. The avalable ones are: {AVAILABLE_DATASETS}')
     if dataset_name == 'maps':
-        dataset = Pix2PixBaseDataset(desired_img_size, DATASETS_ORIG_SIZE['maps'],        val, DATASETS_PATH+'maps',       direction)
+        dataset = Pix2PixBaseDataset(desired_img_size, DATASETS_ORIG_SIZE['maps'],        val, DATASETS_PATH+'maps',        augmentation, direction)
     elif dataset_name == 'edges2shoes':
-        dataset = Pix2PixBaseDataset(desired_img_size, DATASETS_ORIG_SIZE['edges2shoes'], val, DATASETS_PATH+'edges2shoes',direction)
+        dataset = Pix2PixBaseDataset(desired_img_size, DATASETS_ORIG_SIZE['edges2shoes'], val, DATASETS_PATH+'edges2shoes', augmentation, direction)
     elif dataset_name == 'facades':
-        dataset = Pix2PixBaseDataset(desired_img_size, DATASETS_ORIG_SIZE['facades'],     val, DATASETS_PATH+'facades',    direction)
+        dataset = Pix2PixBaseDataset(desired_img_size, DATASETS_ORIG_SIZE['facades'],     val, DATASETS_PATH+'facades',     augmentation, direction)
     elif dataset_name == 'cityscapes':
-        dataset = Pix2PixBaseDataset(desired_img_size, DATASETS_ORIG_SIZE['cityscapes'],  val, DATASETS_PATH+'cityscapes', direction)
+        dataset = Pix2PixBaseDataset(desired_img_size, DATASETS_ORIG_SIZE['cityscapes'],  val, DATASETS_PATH+'cityscapes',  augmentation, direction)
     else:
         raise Exception(f'{dataset_name} is not avalable. The avalable ones are: {AVAILABLE_DATASETS}')
     return dataset
-

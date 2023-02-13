@@ -19,5 +19,10 @@ class Discriminator16x16(nn.Module):
         return
 
     def forward(self, orig_img, transformed_img):
+        _, _, orig_img_height, orig_img_width = orig_img.size()
+        _, _, trans_img_height, trans_img_width = transformed_img.size()
+        if (orig_img_height, orig_img_width) != (16, 16) and (trans_img_height, trans_img_width) != (16, 16):
+            raise Exception(f'The input images need to be 16x16, and it has been fed an image of size IMG A: {orig_img_height}x{orig_img_width} || IMG B: {trans_img_height}x{trans_img_width}')
+            
         x = torch.cat((orig_img, transformed_img),dim=1)
         return self.model(x)

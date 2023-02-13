@@ -4,6 +4,8 @@ from utils.layers.disc_conv_layer import DiscConvBlock
 
 """
     Discriminator1x1: Discriminator model for images patches of size 1x1 pixels
+    Inputs:
+        >> in_chs: (int) Quantity of channels of the input image.
 """
 class Discriminator1x1(nn.Module):
     def __init__(self, in_chs):
@@ -20,5 +22,10 @@ class Discriminator1x1(nn.Module):
         return
 
     def forward(self, orig_img, transformed_img):
+        _, _, orig_img_height, orig_img_width = orig_img.size()
+        _, _, trans_img_height, trans_img_width = transformed_img.size()
+        if (orig_img_height, orig_img_width) != (1, 1) and (trans_img_height, trans_img_width) != (1, 1):
+            raise Exception(f'The input images need to be 1x1, and it has been fed an image of size IMG A: {orig_img_height}x{orig_img_width} || IMG B: {trans_img_height}x{trans_img_width}')
+
         x = torch.cat((orig_img, transformed_img),dim=1)
         return self.model(x)

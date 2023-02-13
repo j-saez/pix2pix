@@ -38,6 +38,7 @@ class DatasetParams():
     dataset_name: str
     img_size: int
     direction: str
+    augmentation: bool
 
 """
     Params
@@ -103,6 +104,7 @@ class Params():
             dataset_name=self.args.dataset_name,
             img_size=self.args.img_size,
             direction=self.args.direction,
+            augmentation=self.args.augmentation,
         )
         if verbose:
             print('\tDataset params')
@@ -123,20 +125,21 @@ class Params():
         parser = argparse.ArgumentParser(description='Arguments for pix2pix training.')
 
         # Hyperparams
-        parser.add_argument( '--total_epochs', type=int, default=500, help='Total epochs for the training.')
-        parser.add_argument( '--batch_size', type=int, default=16, help='Batch size for the training phase.')
-        parser.add_argument( '--learning_rate', type=float, default=2e-4, help='Learning rate value.')
-        parser.add_argument( '--adam_beta1', type=float, default=0.5,help='Adam beta 1.')
-        parser.add_argument( '--adam_beta2', type=float, default=0.999,help='Adam beta 2.')
-        parser.add_argument( '--l1_lambda',  type=float, default=100.0,help='L1 lambda. (Check eq 4 from original paper.)')
-        parser.add_argument( '--test_after_n_epochs', type=int, default=10, help='Test the model after n epochs of training')
-        parser.add_argument( '--patch_size', type=int, default=286, help='Patch for the discriminator. Select between 1, 16, 70 or 286 (default).')
-        parser.add_argument( '--use_unet_gen', type=int, default=True, help='Whether to use the UNET (1) or the encoder-decoder generator (0).')
+        parser.add_argument( '--total_epochs',        type=int,   default=200,   help='Total epochs for the training.')
+        parser.add_argument( '--batch_size',          type=int,   default=16,    help='Batch size for the training phase.')
+        parser.add_argument( '--learning_rate',       type=float, default=2e-4,  help='Learning rate value.')
+        parser.add_argument( '--adam_beta1',          type=float, default=0.5,   help='Adam beta 1.')
+        parser.add_argument( '--adam_beta2',          type=float, default=0.999, help='Adam beta 2.')
+        parser.add_argument( '--l1_lambda',           type=float, default=100.0, help='L1 lambda. (Check eq 4 from original paper.)')
+        parser.add_argument( '--test_after_n_epochs', type=int,   default=10,    help='Test the model after n epochs of training')
+        parser.add_argument( '--patch_size',          type=int,   default=286,   help='Patch for the discriminator. Select between 1, 16, 70 or 286 (default).')
+        parser.add_argument( '--use_unet_gen',        type=int,   default=True,  help='Whether to use the UNET (1) or the encoder-decoder generator (0).')
             
         # Dataset params
         parser.add_argument( '--dataset_path', type=str, default=os.getcwd()+'/datasets/', help='Path to the datasets folder.')
-        parser.add_argument( '--dataset_name', type=str, default='maps', help='Name of the dataset to be loaded for the training.')
-        parser.add_argument( '--img_size', type=int, default=256, help='Size for squared images.')
-        parser.add_argument( '--direction', type=str, default="a_to_b", help='Direction for the transformation. Choose between a_to_b or b_to_a.')
+        parser.add_argument( '--dataset_name', type=str, default='maps',   help='Name of the dataset to be loaded for the training.')
+        parser.add_argument( '--img_size',     type=int, default=256,      help='Size for squared images.')
+        parser.add_argument( '--direction',    type=str, default="a_to_b", help='Direction for the transformation. Choose between a_to_b or b_to_a.')
+        parser.add_argument( '--augmentation', type=int, default=1,        help='Apply data augmentation.')
 
         return parser.parse_args()

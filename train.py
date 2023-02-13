@@ -41,7 +41,7 @@ if __name__ == '__main__':
     hyperparams, dataparams = Params().get_params()
 
     # Load the data
-    train_dataset = load_dataset(dataparams.dataset_name, desired_img_size=dataparams.img_size, val=False, direction=dataparams.direction)
+    train_dataset = load_dataset(dataparams.dataset_name, desired_img_size=dataparams.img_size, val=False, augmentation=dataparams.augmentation, direction=dataparams.direction)
     train_dataloader = DataLoader(train_dataset,hyperparams.batch_size,shuffle=True)
 
     # Load the model
@@ -98,7 +98,7 @@ if __name__ == '__main__':
                 gen.eval()
                 fake_domB_img = gen(fixed_real_domA_img)
                 writer_images = torch.cat((fixed_real_domA_img.to('cpu'), fixed_real_domB_img.to('cpu'), fake_domB_img.to('cpu')), dim=0)
-                writer.add_images(f'Real dom A | Real dom B | Fake dom B', writer_images.numpy(), epoch+1)
+                writer.add_images(f'Real dom A | Real dom B | Fake dom B', writer_images.numpy(), epoch)
                 step = step + 1
                 torch.save(gen.state_dict(), weigths_folder+f'Generator_epoch_{epoch}.pt')
                 torch.save(disc.state_dict(), weigths_folder+f'Discriminator_epoch_{epoch}.pt')
