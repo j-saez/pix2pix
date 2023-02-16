@@ -16,7 +16,7 @@ import torch.nn as nn
 from utils.params                   import Params
 from torch.utils.data.dataloader    import DataLoader
 from torch.optim                    import Adam
-from utils.datasets                 import load_dataset
+from utils.datasets.loader          import load_dataset
 from utils.training                 import load_tensorboard_writer, train_one_epoch, TrainingElements
 from utils.model_selector           import load_discriminator_model, load_generator_model
 
@@ -24,8 +24,10 @@ from utils.model_selector           import load_discriminator_model, load_genera
 ## CONSTANTS AND GLOBALS ##
 ###########################
 
-DATASETS_CHS =       {'facades': 3,   'maps': 3,   'edges2shoes': 3,   'cityskapes': 3}
-DATASETS_ORIG_SIZE = {'facades': 256, 'maps': 600, 'edges2shoes': 256, 'cityskapes': 256}
+X_IMG = 0
+Y_IMG = 1
+DATASETS_CHS =       {'facades': 3,   'maps': 3,   'edges2shoes': 3,   'cityscapes': 3}
+DATASETS_ORIG_SIZE = {'facades': 256, 'maps': 600, 'edges2shoes': 256, 'cityscapes': 256}
 
 ##########
 ## Main ##
@@ -41,6 +43,7 @@ if __name__ == '__main__':
     hyperparams, dataparams = Params().get_params()
 
     # Load the data
+    val_dataset   = load_dataset(dataparams.dataset_name, desired_img_size=dataparams.img_size, val=True,  augmentation=dataparams.augmentation, direction=dataparams.direction)
     train_dataset = load_dataset(dataparams.dataset_name, desired_img_size=dataparams.img_size, val=False, augmentation=dataparams.augmentation, direction=dataparams.direction)
     train_dataloader = DataLoader(train_dataset,hyperparams.batch_size,shuffle=True)
 
@@ -78,17 +81,16 @@ if __name__ == '__main__':
     )
 
     # Instead of fixed noise, we select fixed images to show in tensorboard
-    fixed_real_domA_img = train_dataset[0][0].unsqueeze(dim=0).to(device)
-    fixed_real_domB_img = train_dataset[0][1].unsqueeze(dim=0).to(device)
+    rand_idx = torch.randint(low=0, high=len(val_dataset), size=(1,)).item()
+    fixed_real_domA_img = train_dataset[rand_idx][X_IMG].unsqueeze(dim=0).to(device)
+    fixed_real_domB_img = train_dataset[rand_idx][Y_IMG].unsqueeze(dim=0).to(device)
     step=0
 
 
     # Training loop
     print('\n\nStart of the training process.\n')
     for epoch in range(hyperparams.total_epochs):
-
         epoch_init_time = time.perf_counter()
-
         step = train_one_epoch(training_elements, writer, step, hyperparams.test_after_n_epochs)
         epoch_exec_time = epoch_init_time - time.perf_counter()
 
@@ -103,6 +105,4 @@ if __name__ == '__main__':
                 torch.save(gen.state_dict(), weigths_folder+f'Generator_epoch_{epoch}.pt')
                 torch.save(disc.state_dict(), weigths_folder+f'Discriminator_epoch_{epoch}.pt')
                 gen.train()
-
-        training_elements.epoch += 1
     print('Training finished.')

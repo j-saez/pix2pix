@@ -32,8 +32,8 @@ NORMALIZE_TRANSFORMS = torchvision.transforms.Compose([
 
 """
 
-    Pix2PixBaseDataset
-    Description: Class to load the datasets (maps, facades, edges2shoes, cityscapes) dowloaded from kaggle.
+    MapsDataset
+    Description: Class to load the maps datasets.
     Inputs:
         >> desired_img_size: (int) Desired size for the original image.
         >> orig_img_size: (int) Original size of squared image.
@@ -43,14 +43,13 @@ NORMALIZE_TRANSFORMS = torchvision.transforms.Compose([
 
 """
 
-class Pix2PixBaseDataset(Dataset):
+class MapsDataset(Dataset):
 
     def __init__(self, desired_img_size: int, orig_img_size: int, validation: bool, dataset_path: str, augmentation: bool, direction: str) -> None:
         self.direction = direction
-        dataset_name = dataset_path.split('/')[-1]
         split = 'val' if validation else 'train'
         dataset_path = dataset_path + '/' + split + '/'
-        pre_loaded_filename = f'./datasets/preloaded/{dataset_name}_{split}_augmented.pt' if augmentation else f'./datasets/preloaded/{dataset_name}_{split}.pt'
+        pre_loaded_filename = f'./datasets/preloaded/maps_{split}_augmented.pt' if augmentation else f'./datasets/preloaded/maps_{split}.pt'
 
         # Previously loaded
         if os.path.isfile(pre_loaded_filename):

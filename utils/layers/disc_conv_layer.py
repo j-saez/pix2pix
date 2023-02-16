@@ -14,7 +14,7 @@ class DiscConvBlock(nn.Module):
         stride = 2 if not patch_1x1 else 1
 
         """
-        Convolution + Batch norm + Relu or leaky relu
+        Convolution + Batch norm + Leaky ReLU
         """
         self.model = nn.Sequential()
         self.model.append( nn.Conv2d(in_chs, out_chs, kernel_size=kernel_size, stride=stride, padding=padding_value,bias=False, padding_mode='reflect') )

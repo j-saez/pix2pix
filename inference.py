@@ -9,18 +9,20 @@ if os.getcwd()[-7:] != 'pix2pix':
 ## IMPORT ##
 ############
 
-import cv2
 import torch
 import argparse
-from utils.params                   import Params
-from utils.datasets                 import load_dataset
-from utils.model_selector           import load_discriminator_model, load_generator_model
+from PIL                  import Image
+from utils.params         import Params
+from utils.datasets_utils import load_dataset
+from utils.model_selector import load_discriminator_model, load_generator_model
 
 #############
 ## GLOBALS ##
 #############
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+TO_TENSOR_TRANSFORM = torchvision.transforms.ToTensor()
+TO_PIL_TRANSFORM = torchvision.transforms.ToPilIMage()
 
 ###############
 ## FUNCTIONS ##
@@ -35,9 +37,9 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 """
 def load_args():
     parser = argparse.ArgumentParser(description='Arguments for pix2pix inference.')
-    parser.add_argument( '--generator',    type=str, required=True, help='Generator model. Choose between unet or encoder-decoder' )
+    parser.add_argument( '--generator',     type=str, required=True, help='Generator model. Choose between unet or encoder-decoder' )
     parser.add_argument( '--model_weigths', type=str, required=True, help='Path to the model weigts to be loaded.' )
-    parser.add_argument( '--image', type=str, required=True, help='Path to the image.' )
+    parser.add_argument( '--image_name',    type=str, required=True, help='Path to the image.' )
 
     args = parser.parse_args()
     check_arguments(args)
@@ -72,17 +74,18 @@ if __name__ == '__main__':
 
     # Load args
     args = load_args()
-    generator_name = args.generator_name
+    img_name = args.image_name
+    load_unet = True if args.generator_name == 'unet' else 'encoder-decoder'
     generator_weights = args.model_weigths
-    img_name = args.image
 
     # Load image
-    numpy_img = cv2.imread(img_name)
-    torch_img = torch.from_numpy(numpy_img).unsqueeze(dim=0)
-    print(f'torch_img size = {torch_img.size()}')
-    _, in_chs, _, _ = torch_img.size()
-    img_name = args.image
+    img = TO_TENSOR_TRANSFORM( Image.open(img_name) ).unsqueeze(dim=0)
+    print(f'torch_img size = {img.size()}')
+    _, in_chs, _, _ = img.size()
 
     # Load generator
-    load_unet = True if generator_name == 'unet' else 'encoder-decoder'
     generator = load_generator_model(in_chs, load_unet).to(DEVICE).eval()
+    output_img = generator(img)
+    output_img = TO_PIL_TRANSFORM(output_img)
+    output_img.show()
+    output_img.save('./inferenced/inferenced_'+img_name.split('/')[-1])

@@ -125,7 +125,7 @@ class Params():
         parser = argparse.ArgumentParser(description='Arguments for pix2pix training.')
 
         # Hyperparams
-        parser.add_argument( '--total_epochs',        type=int,   default=200,   help='Total epochs for the training.')
+        parser.add_argument( '--total_epochs',        type=int,   default=300,   help='Total epochs for the training.')
         parser.add_argument( '--batch_size',          type=int,   default=16,    help='Batch size for the training phase.')
         parser.add_argument( '--learning_rate',       type=float, default=2e-4,  help='Learning rate value.')
         parser.add_argument( '--adam_beta1',          type=float, default=0.5,   help='Adam beta 1.')

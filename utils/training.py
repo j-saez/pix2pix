@@ -1,4 +1,6 @@
 import os
+
+from numpy import source
 if os.getcwd()[-7:] != 'pix2pix':
     message = 'Run the file from the the root dir:\n'
     message += 'cd pix2pix\n'
@@ -55,7 +57,7 @@ def load_tensorboard_writer(hyperparams, dataset_name):
     selected_gen = 'unet' if hyperparams.use_unet_gen else 'encoderDecoder'
     tensorboard_dir = os.getcwd()+'/runs/tensorboard/'
     weights_dir = os.getcwd()+'/runs/weights/'
-    training_dir_name = f'/runs/tensorboard/{dataset_name}_lr{hyperparams.lr}_e{hyperparams.total_epochs}_{hyperparams.patch_size}Disc_{selected_gen}Gen/'
+    training_dir_name = f'/runs/tensorboard/{dataset_name}_bs{hyperparams.batch_size}_lr{hyperparams.lr}_e{hyperparams.total_epochs}_{hyperparams.patch_size}Disc_{selected_gen}Gen/'
     model_logs_dir = os.getcwd() + training_dir_name
     model_weights_dir = os.getcwd() + training_dir_name
 

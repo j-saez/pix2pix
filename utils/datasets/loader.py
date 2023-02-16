@@ -7,7 +7,10 @@ if os.getcwd()[-7:] != 'pix2pix':
 ###########
 
 import torchvision
-from datasets.classes.pix2pix_dataset import Pix2PixBaseDataset
+from datasets.classes.edges2shoes import Edges2ShoesDataset
+from datasets.classes.cityscapes  import CityScapesDataset
+from datasets.classes.maps        import MapsDataset
+from datasets.classes.facades     import FacadesDataset
 
 ########################
 ## globals and consts ## 
@@ -36,13 +39,13 @@ def load_dataset(dataset_name, desired_img_size, val, augmentation, direction):
     if not dataset_name in AVAILABLE_DATASETS:
         raise Exception(f'{dataset_name} not available. The avalable ones are: {AVAILABLE_DATASETS}')
     if dataset_name == 'maps':
-        dataset = Pix2PixBaseDataset(desired_img_size, DATASETS_ORIG_SIZE['maps'],        val, DATASETS_PATH+'maps',        augmentation, direction)
+        dataset = MapsDataset(desired_img_size, DATASETS_ORIG_SIZE['maps'], val, DATASETS_PATH+'maps', augmentation, direction)
     elif dataset_name == 'edges2shoes':
-        dataset = Pix2PixBaseDataset(desired_img_size, DATASETS_ORIG_SIZE['edges2shoes'], val, DATASETS_PATH+'edges2shoes', augmentation, direction)
+        dataset = Edges2ShoesDataset( val, DATASETS_PATH+'edges2shoes', direction)
     elif dataset_name == 'facades':
-        dataset = Pix2PixBaseDataset(desired_img_size, DATASETS_ORIG_SIZE['facades'],     val, DATASETS_PATH+'facades',     augmentation, direction)
+        dataset = FacadesDataset(desired_img_size, DATASETS_ORIG_SIZE['facades'],     val, DATASETS_PATH+'facades',     augmentation, direction)
     elif dataset_name == 'cityscapes':
-        dataset = Pix2PixBaseDataset(desired_img_size, DATASETS_ORIG_SIZE['cityscapes'],  val, DATASETS_PATH+'cityscapes',  augmentation, direction)
+        dataset = CityScapesDataset( val, DATASETS_PATH+'cityscapes', direction)
     else:
         raise Exception(f'{dataset_name} is not avalable. The avalable ones are: {AVAILABLE_DATASETS}')
     return dataset

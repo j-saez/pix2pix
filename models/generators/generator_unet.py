@@ -58,20 +58,12 @@ class UNETGenerator(nn.Module):
 
         # Decoder
         dec_l1_out = self.dec_l1(enc_l7_out)
-        print(f'size = {dec_l1_out.size()}')
         dec_l2_out = self.dec_l2(torch.cat((dec_l1_out, enc_l6_out),dim=1))
-        print(f'size = {dec_l2_out.size()}')
         dec_l3_out = self.dec_l3(torch.cat((dec_l2_out, enc_l5_out),dim=1))
-        print(f'size = {dec_l3_out.size()}')
         dec_l4_out = self.dec_l4(torch.cat((dec_l3_out, enc_l4_out),dim=1))
-        print(f'size = {dec_l4_out.size()}')
         dec_l5_out = self.dec_l5(torch.cat((dec_l4_out, enc_l3_out),dim=1))
-        print(f'size = {dec_l5_out.size()}')
         dec_l6_out = self.dec_l6(torch.cat((dec_l5_out, enc_l2_out),dim=1))
-        print(f'size = {dec_l6_out.size()}')
         dec_l7_out = self.dec_l7(torch.cat((dec_l6_out, enc_l1_out),dim=1))
-        print(f'size = {dec_l7_out.size()}')
         output = self.dec_ouptput_layer(torch.cat((dec_l7_out, enc_input_layer_out),dim=1))
-        print(f'size = {output.size()}')
 
         return output
