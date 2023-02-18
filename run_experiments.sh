@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Arrays declaration
-disc_patch=(286 70 16 1)
+disc_patch=(256 70 16 1)
 dataset_names=("maps" "cityscapes" "edges2shoes" "facades")
 unet_gen=(1 0)
 directions=("a_to_b" "b_to_a")
@@ -21,7 +21,8 @@ for ((i=0; i<total_discs; i++)); do
                               --patch_size   "${disc_patch[j]}" \
                               --dataset_name "${dataset_names[t]}"\
                               --direction    "${directions[k]}"\
-                              --total_epochs 300
+                              --total_epochs 300\
+                              --batch_size   16
             done
         done
     done

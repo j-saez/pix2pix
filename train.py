@@ -86,7 +86,6 @@ if __name__ == '__main__':
     fixed_real_domB_img = train_dataset[rand_idx][Y_IMG].unsqueeze(dim=0).to(device)
     step=0
 
-
     # Training loop
     print('\n\nStart of the training process.\n')
     for epoch in range(hyperparams.total_epochs):

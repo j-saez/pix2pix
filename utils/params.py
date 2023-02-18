@@ -132,7 +132,7 @@ class Params():
         parser.add_argument( '--adam_beta2',          type=float, default=0.999, help='Adam beta 2.')
         parser.add_argument( '--l1_lambda',           type=float, default=100.0, help='L1 lambda. (Check eq 4 from original paper.)')
         parser.add_argument( '--test_after_n_epochs', type=int,   default=10,    help='Test the model after n epochs of training')
-        parser.add_argument( '--patch_size',          type=int,   default=286,   help='Patch for the discriminator. Select between 1, 16, 70 or 286 (default).')
+        parser.add_argument( '--patch_size',          type=int,   default=256,   help='Patch for the discriminator. Select between 1, 16, 70 or 256 (default).')
         parser.add_argument( '--use_unet_gen',        type=int,   default=True,  help='Whether to use the UNET (1) or the encoder-decoder generator (0).')
             
         # Dataset params

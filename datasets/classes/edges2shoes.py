@@ -64,7 +64,6 @@ class Edges2ShoesDataset(Dataset):
 
         # Data aug
         if torch.rand(size=(1,)).item() < 0.2:
-            print('Augment')
             imgA, imgB = transform_imgs(imgA, imgB)
 
         if self.direction == 'a_to_b':

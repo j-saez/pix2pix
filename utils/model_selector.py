@@ -2,7 +2,7 @@
 ## imports ## 
 #############
 
-from models.discriminators.discriminator_patch286 import Discriminator286x286
+from models.discriminators.discriminator_patch256 import Discriminator256x256
 from models.discriminators.discriminator_patch70  import Discriminator70x70
 from models.discriminators.discriminator_patch16  import Discriminator16x16
 from models.discriminators.discriminator_patch1   import Discriminator1x1
@@ -24,9 +24,9 @@ from models.generators.encoder_decoder_generator  import EncoderDecoderGenerator
 """
 def load_discriminator_model(in_chs, patch_size):
     model = []
-    if patch_size==286:
-        print('Loading Discriminator286x286')
-        model = Discriminator286x286(in_chs)
+    if patch_size==256:
+        print('Loading Discriminator256x256')
+        model = Discriminator256x256(in_chs)
     elif patch_size==70:
         print('Loading Discriminator70x70')
         model = Discriminator70x70(in_chs)
@@ -37,7 +37,7 @@ def load_discriminator_model(in_chs, patch_size):
         print('Loading Discriminator1x1')
         model = Discriminator1x1(in_chs)
     else:
-        raise Exception(f'There is no discriminator for {patch_size} patch size. Choose between: 286, 70, 16 and 1')
+        raise Exception(f'There is no discriminator for {patch_size} patch size. Choose between: 256, 70, 16 and 1')
     return model
 
 """

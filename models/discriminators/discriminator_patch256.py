@@ -3,13 +3,13 @@ import torch.nn as nn
 from utils.layers.disc_conv_layer import DiscConvBlock
 
 """
-    Discriminator286x286: Discriminator model for images patches of size 256x256 pixels
+    Discriminator256x256: Discriminator model for images patches of size 256x256 pixels
     Inputs:
         >> in_chs: (int) Quantity of channels of the input image.
 """
-class Discriminator286x286(nn.Module):
+class Discriminator256x256(nn.Module):
     def __init__(self, in_chs):
-        super(Discriminator286x286, self).__init__()
+        super(Discriminator256x256, self).__init__()
         self.model = nn.Sequential(
             # As specified in the paper, Batch norm is not applied to the first c64 layer
             DiscConvBlock(in_chs*2,   out_chs=64,  padding_value=1, norm=False),

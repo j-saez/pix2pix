@@ -97,22 +97,23 @@ def create_runs_dirs(tensorboard_dir, weights_dir, model_weights_dir, model_logs
         >> disc_opt: (nn.optim) Discriminator optimizer.
         >> real_imgs: (torch tensor) containing the real images from the source domain.
         >> dst_imgs: (torch tensor) containing the real images from the target domain.
-        >> fake_dst_imgs: (torch tensor) containing the fake iamges from the target domain.
     Outputs:
         >> loss_disc: (torch.float32) containing the value of the loss for the discriminator
         >> real_disc_output: (torch.float32) containing the value of the output for the discriminator when fed with real images.
         >> fake_disc_output: (torch.float32) containing the value of the output for the discriminator when fed with fake images.
 """
-def train_discriminator(train_elements, real_imgs, dst_imgs, fake_dst_imgs):
+def train_discriminator(train_elements, real_imgs, dst_imgs):
+    rand_cropper = train_elements.random_cropper
+    disc = train_elements.disc
+    gen = train_elements.gen
+    bce = train_elements.bce_criterion
 
     ## Train discriminator: max log(D(x)) + log(1-D(G(z)))
-    real_disc_output = train_elements.disc(real_imgs, dst_imgs).reshape(-1)
-    loss_real_disc = train_elements.bce_criterion(real_disc_output, torch.ones_like(real_disc_output))
+    real_disc_output = disc(rand_cropper(real_imgs), rand_cropper(dst_imgs)).reshape(-1)
+    loss_real_disc = bce(real_disc_output, torch.ones_like(real_disc_output))
 
-    fake_disc_output = train_elements.disc(real_imgs, fake_dst_imgs.detach()).reshape(-1)
-    loss_fake_disc = train_elements.bce_criterion(fake_disc_output, torch.zeros_like(fake_disc_output))
-
-    # It is needed to add something more to the loss as described in the paper.
+    fake_disc_output = disc(rand_cropper(real_imgs), rand_cropper( gen(dst_imgs) )).reshape(-1)
+    loss_fake_disc = bce(fake_disc_output, torch.zeros_like(fake_disc_output))
     loss_disc = ((loss_real_disc + loss_fake_disc) / 2.0) 
 
     train_elements.disc.zero_grad()
@@ -124,22 +125,24 @@ def train_discriminator(train_elements, real_imgs, dst_imgs, fake_dst_imgs):
     Name: train_generator
     Description: Trains the generator one epoch.
     Inputs:
-        >> disc: (nn.Module) Discriminator model.
-        >> gen: (nn.Module) Generator model.
-        >> bce_criterion: (nn.BCELoss) BCELoss object.
-        >> l1_criterion: (nn.L1Loss) L1Loss object.
-        >> l1_lambda: (float) containing the value for the labmda that multiplies the l1 loss value.
-        >> gen_opt: (nn.optim) Generator optimizer.
-        >> fake_imgs: (torch tensor) containing the fake iamges from the target domain.
+        >> train_elements: (TrainingElements) object.
+        >> x_imgs: (torch.Tensor) containg the x images.
+        >> y_imgs: (torch.Tensor) containg the y images.
     Outputs:
         >> loss_generator: (torch.float32) containing the value of the loss for the generator.
         >> fake_disc_output: (torch.float32) containing the value of the output for the discriminator when fed with fake images.
 """
-def train_generator(train_elements, real_source_imgs,real_dst_imgs, fake_dst_imgs):
+def train_generator(train_elements, x_imgs, y_imgs):
+    rand_cropper = train_elements.random_cropper
+    disc = train_elements.disc
+    gen = train_elements.gen
+    bce = train_elements.bce_criterion
+    l1 = train_elements.l1_criterion
+
     ## Train generator: min log(1-D(G(z))) <--> max log(D(G(z)))
-    fake_disc_output = train_elements.disc(real_source_imgs, fake_dst_imgs).reshape(-1)
-    bce_loss_generator = train_elements.bce_criterion(fake_disc_output, torch.ones_like(fake_disc_output))
-    l1_loss_generator = train_elements.l1_criterion(fake_dst_imgs, real_dst_imgs)
+    fake_disc_output = disc(rand_cropper(x_imgs), rand_cropper(gen(y_imgs))).reshape(-1)
+    bce_loss_generator = bce(fake_disc_output, torch.ones_like(fake_disc_output))
+    l1_loss_generator = l1(gen(y_imgs), y_imgs)
     loss_generator = bce_loss_generator + train_elements.l1_lambda * l1_loss_generator
 
     train_elements.gen.zero_grad()
@@ -151,19 +154,10 @@ def train_generator(train_elements, real_source_imgs,real_dst_imgs, fake_dst_img
     Name: train_one_epoch
     Description: Trains the discriminator and the generator one epoch.
     Inputs:
-        >> train_dataloader: Dataloader for the training dataset.
-        >> disc: (nn.Module) Discriminator model.
-        >> gen: (nn.Module) Generator model.
-        >> disc_opt: (nn.optim) Discriminator optimizer.
-        >> gen_opt: (nn.optim) Generator optimizer.
-        >> bce_criterion: (nn.BCELoss) object containing the bce criterion.
-        >> l1_criterion: (torch.nn.) object containing the l1 criterion.
-        >> hyperparms: Hyperparms (check <root repo>/utils/params.py) object containing the value of the diffrerent hypervalues containing the value of the diffrerent hypervalues.
-        >> epoch: (Int) Current epoch of the training.
-        >> total_train_baches: (Int) Total number of baches for the training dataset.
-        >> device: Device where the data is going to be loaded for training.
+        >> train_elements: (TrainingElements) object.
         >> writer: (tensorboard SummaryWriter) object to save different values of the training process.
         >> step: (Int) Current step of the training. Needed for the SummaryWriter.
+        >> test_after_n_epochs: (Int) Show info after n epochs.
     Outputs:
         >> step: (Int) Updated value for the step variable of the training. Needed for the SummaryWriter.
 """
@@ -175,19 +169,12 @@ def train_one_epoch(train_elements, writer, step, test_after_n_epochs):
         # Data to device and to proper data type
         source_imgs = source_imgs.to(device)
         dst_imgs = dst_imgs.to(device)
-        fake_dst_imgs = train_elements.gen(source_imgs)
-
-        # Crop the a patch of the data for the discriminator
-        if train_elements.patch_size != 286:
-            source_imgs = train_elements.random_cropper(source_imgs)
-            dst_imgs = train_elements.random_cropper(dst_imgs)
-            fake_dst_imgs = train_elements.random_cropper(fake_dst_imgs)
 
         ## Train discriminator: max log(D(x)) + log(1-D(G(z)))
-        loss_disc, d_x, d_gx1 = train_discriminator(train_elements, source_imgs, dst_imgs, fake_dst_imgs)
+        loss_disc, d_x, d_gx1 = train_discriminator(train_elements, source_imgs, dst_imgs)
 
         ## Train generator: min log(1-D(G(z))) <--> max log(D(G(z)))
-        loss_gen, d_gx2 = train_generator(train_elements, source_imgs, dst_imgs, fake_dst_imgs)
+        loss_gen, d_gx2 = train_generator(train_elements, source_imgs, dst_imgs)
 
         batch_final_time = time.perf_counter()
         batch_exec_time = batch_final_time - batch_init_time
