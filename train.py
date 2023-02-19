@@ -17,7 +17,8 @@ from utils.params                   import Params
 from torch.utils.data.dataloader    import DataLoader
 from torch.optim                    import Adam
 from utils.datasets.loader          import load_dataset
-from utils.training                 import load_tensorboard_writer, train_one_epoch, TrainingElements
+from utils.training.tools           import TrainModelsAndOpts,TrainCriterions,TrainingElements,load_tensorboard_writer
+from utils.training.gan             import train_one_epoch 
 from utils.model_selector           import load_discriminator_model, load_generator_model
 
 ###########################
@@ -52,8 +53,8 @@ if __name__ == '__main__':
     gen = load_generator_model(DATASETS_CHS[dataparams.dataset_name], hyperparams.use_unet_gen).to(device)
 
     # Define optimizer and loss function
-    disc_optimizer = Adam(disc.parameters(), hyperparams.lr, betas=(hyperparams.adam_beta1, hyperparams.adam_beta2))
-    gen_optimizer = Adam(gen.parameters(), hyperparams.lr, betas=(hyperparams.adam_beta1, hyperparams.adam_beta2))
+    disc_opt= Adam(disc.parameters(), hyperparams.lr, betas=(hyperparams.adam_beta1, hyperparams.adam_beta2))
+    gen_opt= Adam(gen.parameters(), hyperparams.lr, betas=(hyperparams.adam_beta1, hyperparams.adam_beta2))
     bce_criterion = nn.BCELoss()
     l1_criterion = nn.L1Loss()
 
@@ -61,23 +62,16 @@ if __name__ == '__main__':
     writer, weigths_folder = load_tensorboard_writer(hyperparams, dataparams.dataset_name)
     total_train_baches = int(len(train_dataset) / hyperparams.batch_size)
 
-    # Create a TrainingElements object to reduce the number of arguments called in utils/training.py functions.
+    # Create a TrainingElements object to reduce the number of arguments called in utils/training/** functions.
     training_elements = TrainingElements(
         train_dataloader,
-        disc,
-        gen,
-        disc_optimizer,
-        gen_optimizer,
-        bce_criterion,
-        l1_criterion,
-        hyperparams.lr,
-        0,
-        hyperparams.total_epochs,
-        total_train_baches,
-        hyperparams.patch_size,
-        hyperparams.l1_lambda,
-        device,
-        torchvision.transforms.RandomCrop(size=hyperparams.patch_size)
+        models=TrainModelsAndOpts(disc,gen,disc_opt,gen_opt),
+        criterions=TrainCriterions(bce_criterion, l1_criterion),
+        hyperparams=hyperparams,
+        epoch=0,
+        total_train_baches=total_train_baches,
+        device=device,
+        random_cropper=torchvision.transforms.RandomCrop(size=hyperparams.patch_size)
     )
 
     # Instead of fixed noise, we select fixed images to show in tensorboard

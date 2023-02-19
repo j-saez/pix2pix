@@ -1,4 +1,5 @@
 {
-    "venvPath": /home/jsaez/.pyenv/versions/,
-    "venv": pytorch_nns,
+    "include": ["/home/jsaez/virtualenvs/pytorch_nns/pix2pix"],
+    "venvPath": ["/home/jsaez/.pyenv/versions/"],
+    "venv": ["pytorch_nns"],
 }
